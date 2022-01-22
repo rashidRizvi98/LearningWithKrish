@@ -1,1 +1,3 @@
-commons\model\Employee.class
+commons\model\department\Department.class
+commons\model\employee\Employee.class
+commons\model\project\Project.class

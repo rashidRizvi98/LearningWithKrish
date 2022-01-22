@@ -11,3 +11,10 @@ spring:
           search-paths:
             - '*service'
           default-label: master
+  application:
+    name: local-config
+
+eureka:
+  instance:
+    instance-id: ${spring.application.name}-${random.int}
+    hostname: localhost

@@ -1,0 +1,20 @@
+spring:
+  cloud:
+    loadbalancer:
+      ribbon:
+        enabled: false
+    gateway:
+      discovery:
+        locator:
+          enabled: true
+          lower-case-service-id: true
+      routes:
+        - id: employee-service
+          uri: lb://employee-service
+          predicates:
+            - Path=/api/v1/employee/*
+eureka:
+  instance:
+    instance-id: ${spring.application.name}-${random.int}
+server:
+  port: 8080
