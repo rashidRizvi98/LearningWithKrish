@@ -4,6 +4,11 @@ spring:
       uri: http://localhost:8181
   application:
     name: employee-service
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: http://localhost:8080/auth/realms/employee-management-realm
 
 eureka:
   instance:

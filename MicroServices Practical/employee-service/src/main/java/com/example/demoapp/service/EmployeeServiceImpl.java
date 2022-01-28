@@ -6,14 +6,14 @@ import com.example.demoapp.repository.EmployeeRepository;
 import commons.model.department.Department;
 import commons.model.employee.Employee;
 import commons.model.project.Project;
-import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cloud.client.circuitbreaker.CircuitBreaker;
 import org.springframework.cloud.client.circuitbreaker.CircuitBreakerFactory;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.HashMap;
@@ -28,6 +28,10 @@ public class EmployeeServiceImpl implements EmployeeService{
     private final RestTemplate restTemplate;
     private final CircuitBreakerFactory circuitBreakerFactory;
 
+
+
+
+    HttpHeaders headers = new HttpHeaders();
 
     @Override
     public Employee save(Employee employee) {
@@ -63,17 +67,32 @@ public class EmployeeServiceImpl implements EmployeeService{
     }
 
     private Object getDepartment(String departmentId){
+
+        JwtAuthenticationToken token=(JwtAuthenticationToken) SecurityContextHolder
+                .getContext()
+                .getAuthentication();
+
+        headers.add("Authorization" , "Bearer "+token.getToken().getTokenValue());
+        HttpEntity<MultiValueMap<String, String>> entity = new HttpEntity<>(headers);
+
         CircuitBreaker circuitBreaker=circuitBreakerFactory.create("department_breaker");
         return circuitBreaker.run(() -> restTemplate
-                .getForObject("http://department-service/api/v1/department/" + departmentId
-                        , Department.class), throwable -> getFallback("Could not retrieve department at the moment"));
+                .exchange("http://department-service/api/v1/department/" + departmentId
+                        ,HttpMethod.GET,entity, Department.class).getBody(), throwable -> getFallback("Could not retrieve department at the moment"));
     }
 
     private Object getProject(String projectId){
+        JwtAuthenticationToken token=(JwtAuthenticationToken) SecurityContextHolder
+                .getContext()
+                .getAuthentication();
+
+        headers.add("Authorization" , "Bearer "+token.getToken().getTokenValue());
+        HttpEntity<MultiValueMap<String, String>> entity = new HttpEntity<>(headers);
+
         CircuitBreaker circuitBreaker=circuitBreakerFactory.create("project_breaker");
        return circuitBreaker.run(() -> restTemplate
-                .getForObject("http://project-service/api/v1/project/" + projectId
-                        , Project.class), throwable -> getFallback("Could not retrieve project at the moment"));
+                .exchange("http://project-service/api/v1/project/" + projectId
+                        , HttpMethod.GET,entity, Project.class).getBody(), throwable -> getFallback("Could not retrieve project at the moment"));
 
     }
 

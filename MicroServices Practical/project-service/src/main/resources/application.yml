@@ -2,13 +2,18 @@ spring:
   datasource:
     url: jdbc:mysql://localhost:3306/project_service_db?createDatabaseIfNotExist=true
     username: root
-    password: *****
+    password:
     driver-class-name: com.mysql.jdbc.Driver
   jpa:
     hibernate:
       ddl-auto: update
   application:
     name: project-service
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: http://localhost:8080/auth/realms/employee-management-realm
 server:
   port: 8084
 

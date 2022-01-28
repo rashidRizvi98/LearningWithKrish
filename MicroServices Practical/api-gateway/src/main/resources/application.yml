@@ -12,9 +12,11 @@ spring:
         - id: employee-service
           uri: lb://employee-service
           predicates:
-            - Path=/api/v1/employee/*
+            - Path=/api/v1/employee/*,/api/v1/employee
+
+
 eureka:
   instance:
     instance-id: ${spring.application.name}-${random.int}
 server:
-  port: 8080
+  port: 8081
